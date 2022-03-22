@@ -1,5 +1,10 @@
 const express = require("express");
+const bodyParser = require("body-parser");
+let multer = require("multer");
+// multer = multer();
 const app = express();
+
+// Set route as you like for practice purpose
 
 // Get Request
 // app.get("/", (req, res) => {
@@ -135,6 +140,78 @@ app.post("/re-header", (req, res) => {
     res.send("userName: " + userName + ", Password : " + password);
 
 });
+
+// post Request Working with JSON Body
+
+app.use(bodyParser.json());
+app.post("/body-parser", (req, res) => {
+    let JSONData = req.body;
+    let JSONString = JSON.stringify(JSONData);
+    let name = JSONData.name;
+    let age = JSONData.age;
+    res.send(JSONString + "\n" + name + "\n" + age);
+});
+
+// Working With Multipart Form Data
+// parsing multipart form/data
+
+// app.use(multer.array());
+// app.use(express.static("public"));
+// app.post("/multipart", (req, res) => {
+//     let JSONDATA = req.body;
+//     res.send(JSON.stringify(JSONDATA));
+// });
+
+// Post Request with multer File Upload
+
+let storage = multer.diskStorage({
+    destination:function (req, file,callback) {
+        
+        callback(null, "./uploads");
+    },
+    filename:function (req, file, callback) {
+        callback(null, file.originalname);
+        
+    }
+});
+
+// let upload = multer({storage: storage}.single("myfile"));
+// app.post("/mytest", (req, res) => {
+//     upload(req, res,(error) => {
+//         if(error) {
+//             res.send("file upload is failed");
+//         }
+//         else {
+//             res.send("file upload is successful");
+//         }
+//     })
+// });
+
+// Application lavel Middleware for whole application request and response
+app.use((req, res, next) => {
+    console.log("This is an application lavel middleware");
+    next();
+});
+
+app.get("/about", (req, res) => {
+    res.send("I'm a about page");
+});
+
+app.get("/contact", (req, res) => {
+    res.send("I'm a contact page");
+});
+
+// Route lavel Middleware for every route
+
+app.use("/news", (req, res, next) => {
+    console.log("I'm news page middleware");
+    next();
+});
+
+app.get("/news", (req, res) => {
+    res.send("I'm a news page for testing middleware");
+});
+
 
 
 
